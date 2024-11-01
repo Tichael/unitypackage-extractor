@@ -17,6 +17,7 @@ progressBar = None
 statusText = None
 #Values Are Flipped, 1 is Off, 0 is On
 useMeta = tk.IntVar()
+keepTempFiles = tk.IntVar()
 
 def mainloop():
     window.mainloop()
@@ -41,7 +42,7 @@ def extract():
     #progressBar.start()
 
     #Start The Extraction On A Seperate Thread
-    thread = threading.Thread(target=extract.extract, args=(filePathEntry.get(), (useMeta.get() == 0), progressBar, statusText))
+    thread = threading.Thread(target=extract.extract, args=(filePathEntry.get(), (useMeta.get() == 0), (keepTempFiles.get() == 0), progressBar, statusText))
     thread.start()
 
 #Setup UI Elements
@@ -61,6 +62,7 @@ def setup():
     elements.append(filePathEntry)
 
     elements.append(ttk.Checkbutton(text='Extract Meta Files', variable=useMeta, onvalue=0, offvalue=1))
+    elements.append(ttk.Checkbutton(text='Keep temporary files', variable=keepTempFiles, onvalue=0, offvalue=1))
     elements.append(ttk.Button(text="Extract", width=35, command=extract))
 
     global progressBar

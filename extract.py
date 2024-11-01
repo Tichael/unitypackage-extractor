@@ -16,6 +16,26 @@ def error(err):
     print("[ERROR] " + err)
 
 def extractAsset(assetPath, outputPath, useMeta, progressBar, totalFileCount):
+    #Check if packagemanagermanifest
+    if os.path.basename(os.path.normpath(assetPath)) == 'packagemanagermanifest':
+        # Create the manifest file
+        destination = 'Packages/manifest.json'
+
+        try:
+            assetFilePath = os.path.join(assetPath, "asset")
+
+            #Make Sure That It's Actually A File First
+            if (os.path.isfile(assetFilePath)):
+
+                #Set Status
+                if (globalStatusText != None):
+                    globalStatusText.config(text = "Moving " + os.path.basename(pathname))
+
+                os.rename(assetFilePath, os.path.join(outputPath, destination))
+        except:
+            error("Extraction Failed On Third Stage: Asset Moving " + os.path.join(assetPath, "asset") + " To " + os.path.join(outputPath, destination))
+        finally:
+            return
 
     #Get The First Line Of The pathname File
     pathname = open(os.path.join(assetPath, "pathname"), "r").read().split("\n")[0]
@@ -59,7 +79,7 @@ def extractAsset(assetPath, outputPath, useMeta, progressBar, totalFileCount):
     if (progressBar != None):
         progressBar["value"] += 100 / totalFileCount
 
-def extract(pkgPath, useMeta, progressBar, statusText):
+def extract(pkgPath, useMeta, keepTempfiles, progressBar, statusText):
     if (os.path.isfile(pkgPath)):
 
         #Init Status
@@ -96,8 +116,9 @@ def extract(pkgPath, useMeta, progressBar, statusText):
         for asset in assets:
             extractAsset(asset, outputPath, useMeta, progressBar, len(assets))
 
-        #Clean Up
-        shutil.rmtree(tempPath)
+        if not keepTempfiles:
+            #Clean Up
+            shutil.rmtree(tempPath)
 
         print("[SUCCESS] Extracted Assets To " + outputPath)
 
