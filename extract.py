@@ -16,29 +16,14 @@ def error(err):
     print("[ERROR] " + err)
 
 def extractAsset(assetPath, outputPath, useMeta, progressBar, totalFileCount):
+    pathname = ""
+
     #Check if packagemanagermanifest
     if os.path.basename(os.path.normpath(assetPath)) == 'packagemanagermanifest':
-        # Create the manifest file
-        destination = 'Packages/manifest.json'
-
-        try:
-            assetFilePath = os.path.join(assetPath, "asset")
-
-            #Make Sure That It's Actually A File First
-            if (os.path.isfile(assetFilePath)):
-
-                #Set Status
-                if (globalStatusText != None):
-                    globalStatusText.config(text = "Moving " + os.path.basename(pathname))
-
-                os.rename(assetFilePath, os.path.join(outputPath, destination))
-        except:
-            error("Extraction Failed On Third Stage: Asset Moving " + os.path.join(assetPath, "asset") + " To " + os.path.join(outputPath, destination))
-        finally:
-            return
-
-    #Get The First Line Of The pathname File
-    pathname = open(os.path.join(assetPath, "pathname"), "r").read().split("\n")[0]
+        pathname = 'Packages/manifest.json'
+    else:
+        #Get The First Line Of The pathname File
+        pathname = open(os.path.join(assetPath, "pathname"), "r").read().split("\n")[0]
 
     #Make Directory Tree
     try:
@@ -68,7 +53,7 @@ def extractAsset(assetPath, outputPath, useMeta, progressBar, totalFileCount):
         metaFilePath = os.path.join(assetPath, "asset.meta")
 
         #Make Sure That Meta Moving Is Enabled
-        if (useMeta):
+        if (useMeta and os.path.exists(metaFilePath)):
             os.rename(metaFilePath, os.path.join(outputPath, pathname + ".meta"))
     except:
         error("Extraction Failed On Fourth Stage: Meta Moving " + os.path.join(assetPath, "asset.meta") + " To " + os.path.join(outputPath, pathname + ".meta"))
